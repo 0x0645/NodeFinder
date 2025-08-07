@@ -11,7 +11,7 @@ requests==2.32.3  # https://github.com/psf/requests
 
 # Django
 # ------------------------------------------------------------------------------
-django==5.1.11  # pyup: < 5.2 # https://www.djangoproject.com/
+django==5.2.5  # pyup: < 5.2 # https://www.djangoproject.com/
 django-environ==0.12.0  # https://github.com/joke2k/django-environ
 django-model-utils==5.0.0  # https://github.com/jazzband/django-model-utils
 django-redis==6.0.0  # https://github.com/jazzband/django-redis
