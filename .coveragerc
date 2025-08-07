@@ -1,0 +1,51 @@
+[run]
+source = .
+omit =
+    */migrations/*
+    */venv/*
+    */env/*
+    */node_modules/*
+    */staticfiles/*
+    */static/*
+    */media/*
+    */tests.py
+    */test_*.py
+    */*test*.py
+    */conftest.py
+    manage.py
+    */wsgi.py
+    */asgi.py
+    */settings/local.py
+    */settings/production.py
+    requirements/*
+    *.txt
+    *.md
+    *.yml
+    *.yaml
+    *.json
+    .git/*
+    compose/*
+    .envs/*
+    htmlcov/*
+    .coverage*
+    */site-packages/*
+    */dist-info/*
+    */lib/python*/*
+    CONTRIBUTORS.txt
+    LICENSE
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+
+[html]
+directory = htmlcov

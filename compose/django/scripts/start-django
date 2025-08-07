@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+python manage.py migrate
+python manage.py collectstatic --noinput
+
+# Only compile messages if locale files exist
+if [ -d "locale" ] && [ -n "$(find locale -name '*.po' 2>/dev/null)" ]; then
+    python manage.py compilemessages
+else
+    echo "No locale files found, skipping compilemessages"
+fi
+
+python manage.py runserver 0.0.0.0:8000

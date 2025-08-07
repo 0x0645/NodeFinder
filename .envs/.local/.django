@@ -1,0 +1,30 @@
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=yes
+DJANGO_SETTINGS_MODULE=config.settings.local
+DJANGO_SECRET_KEY=aQAPI3zdOL5z5zRyRylFqbEJptGogtJnXDCM1GduNiFTlRlcli9Z7J2jXhm46LQn
+DJANGO_ADMIN_URL=admin/
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+
+# Security
+# ------------------------------------------------------------------------------
+# TIP: better off using DNS, however, redirect is OK too
+DJANGO_SECURE_SSL_REDIRECT=False
+
+# ------------------------------------------------------------------------------
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+# Database
+# ------------------------------------------------------------------------------
+DATABASE_URL=postgres://postgres:postgres@postgres:5432/nodefinder
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+# ------------------------------------------------------------------------------
+
+# Flower
+CELERY_FLOWER_USER=local
+CELERY_FLOWER_PASSWORD=local

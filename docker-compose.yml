@@ -1,0 +1,108 @@
+volumes:
+  production_postgres_data: {}
+  production_postgres_data_backups: {}
+  production_redis_data: {}
+  static_volume: {}
+  media_volume: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: production
+    image: nodefinder_django
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    command: /start-django
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: nodefinder_production_postgres
+    volumes:
+      - production_postgres_data:/var/lib/postgresql/data
+      - production_postgres_data_backups:/backups
+    env_file:
+      - ./.envs/.production/.postgres
+
+  redis:
+    image: docker.io/redis:6
+    volumes:
+      - production_redis_data:/data
+
+  celeryworker:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: production
+    image: nodefinder_celeryworker
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    command: /start-celeryworker
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+  celerybeat:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: production
+    image: nodefinder_celerybeat
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    command: /start-celerybeat
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+  flower:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: production
+    image: nodefinder_flower
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.production/.django
+      - ./.envs/.production/.postgres
+    command: /start-flower
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/nginx/Dockerfile
+    image: nodefinder_nginx
+    depends_on:
+      - django
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro

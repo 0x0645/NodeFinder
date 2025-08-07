@@ -1,0 +1,119 @@
+volumes:
+  local_postgres_data: {}
+  local_postgres_data_backups: {}
+  static_volume: {}
+  media_volume: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: local
+    image: nodefinder_local_django
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    command: /start-django
+    volumes:
+      - .:/app:z
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+
+  postgres:
+    image: postgres:15-alpine
+    volumes:
+      - local_postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: nodefinder
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: docker.io/redis:6
+    ports:
+      - "6379:6379"
+
+  celeryworker:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: local
+    image: nodefinder_local_celeryworker
+    depends_on:
+      - postgres
+      - redis
+      - django
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    command: /start-celeryworker
+    volumes:
+      - .:/app:z
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    restart: unless-stopped
+
+  celerybeat:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: local
+    image: nodefinder_local_celerybeat
+    depends_on:
+      - postgres
+      - redis
+      - django
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    command: /start-celerybeat
+    volumes:
+      - .:/app:z
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    restart: unless-stopped
+
+  flower:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        BUILD_ENVIRONMENT: local
+    image: nodefinder_local_flower
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    command: /start-flower
+    ports:
+      - "5555:5555"
+    volumes:
+      - .:/app:z
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./compose/nginx/Dockerfile
+    image: nodefinder_local_nginx
+    depends_on:
+      - django
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
