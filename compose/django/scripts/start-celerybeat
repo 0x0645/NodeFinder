@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# Wait for database to be ready by checking if migrations are complete
+until python manage.py showmigrations --plan | grep -q "\[X\]"; do
+    >&2 echo "Database migrations not ready, waiting..."
+    sleep 5
+done
+
+>&2 echo "Database is ready, starting celery beat"
+
+exec celery -A config.celery_app beat -l INFO
