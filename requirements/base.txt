@@ -7,7 +7,7 @@ celery==5.5.3  # pyup: < 6.0  # https://github.com/celery/celery
 django-celery-beat==2.8.1  # https://github.com/celery/django-celery-beat
 django-celery-results==2.5.1  # https://github.com/celery/django-celery-results
 flower==2.0.1  # https://github.com/mher/flower
-requests==2.32.3  # https://github.com/psf/requests
+requests==2.32.4  # https://github.com/psf/requests
 
 # Django
 # ------------------------------------------------------------------------------
